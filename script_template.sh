@@ -153,7 +153,7 @@ if [[ "${1:-}" == "" ]] && [[ ${RK_HAS_MANDATORY_ARGUMENTS} = "YES" ]]; then
   help
   exit 1
 else
-  while [[ "$1" != "" ]]
+  while [[ "${1:-}" != "" ]]
   do
 	  case $1 in
       -i)
