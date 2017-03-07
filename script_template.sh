@@ -57,7 +57,7 @@ RK_LIBRARIES="required_library.sh"
 #########################################################################
 # Function to extract the help usage from the script
 help () {
-	grep '^[ ]*[\#]*H' ${RK_SCRIPT} | sed 's/^[ ]*[\#]*H //g' | sed 's/^  //'
+	grep '^[ ]*[\#]*H' ${RK_SCRIPT} | sed 's/^[ ]*[\#]*H//g' | sed 's/^  //'
 }
 # Function to extract the documentation from the script
 doc () {
