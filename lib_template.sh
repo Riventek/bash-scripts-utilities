@@ -79,6 +79,19 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   echoerr() {
     echo -e ${RK_SCRIPT}" [$(date +'%Y-%m-%d %H:%M:%S')] $@" >&2
   }
+  # Function to clean-up when exiting
+  clean_exit() {
+      local exit_code
+      if [ "${1:-}" == "" ]; then
+          let exit_code=0
+      else
+          let exit_code=$(( $1 ))
+      fi
+      if [[ ${TMPFILE:-} != "" ]]; then
+          rm -f ${TMPFILE:-}*
+      fi
+      exit $exit_code
+  }
   # Function to check availability and load the required librarys
   check_libraries() {
 	  if [[ ${RK_LIBRARIES:-} != "" ]]; then
@@ -92,7 +105,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 		    fi
 		    if [[ ${missing} -gt 0 ]]; then
 		      echoerr "** ERROR **: Cannot found ${missing} required libraries, aborting\n"
-		      exit 1
+		      clean_exit 1
 		    fi
 	    done
 	  fi
@@ -109,7 +122,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 	    done
 	    if [[ ${missing} -gt 0 ]]; then
 		    echoerr "** ERROR **: Cannot found ${missing} required commands are missing in PATH, aborting\n"
-		    exit 1
+		    clean_exit 1
 	    fi
 	  fi
   }
@@ -138,7 +151,7 @@ function_name()
     first_parameter="${1:-}"    
   else
 	  echoerr "** ERROR in ${FUNCNAME[0]}() ** : Cannot the find first parameter !"
-    exit 1
+    clean_exit 1
   fi
   if [[ "${2:-}" != "" ]]; then
     second_parameter="${2:-}"
@@ -149,7 +162,7 @@ function_name()
   # Main function code
   
   # Cleaning up 
-  rm -Rf ${tmpfile}*  
+  rm -Rf ${tmpfile}*
 }
 
 # Only if the library is executed
@@ -161,28 +174,28 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   check_libraries
   # Check if we have all the required commands
   check_dependencies
-  
+
   # Command Line Parsing
   if [[ "${1:-}" == "" ]] && [[ ${RK_HAS_MANDATORY_ARGUMENTS} = "YES" ]]; then
 	  help
-	  exit 1
+	  clean_exit 1
   else
 	  while [[ "${1:-}" != "" ]]
 	  do
 	    case "${1:-}" in
-		    -d|--doc)  
+		    -d|--doc)
 		      shift
 		      doc
-		      exit 0
+		      clean_exit 0
 		      ;;
 		    -h|--help)
 		      shift
 		      help
-		      exit 0
+		      clean_exit 0
 		      ;;
 		    *)
 		      error "Option '$1' not supported !"
-		      exit 1
+		      clean_exit 1
 		      ;;
 	    esac
 	  done

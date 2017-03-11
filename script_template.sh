@@ -44,13 +44,13 @@ set -o pipefail
 # set -o xtrace
 
 #########################################################################
-# VARIABLES SETUP 
+# VARIABLES SETUP
 #########################################################################
 readonly RK_SCRIPT=$0              # Store the script name for help() and doc() functions
 readonly RK_HAS_MANDATORY_ARGUMENTS="YES" # or "NO"
 readonly TMPFILE=$(mktemp)      # Generate the temporary mask
 # Add the commands and libraries required for the script to run
-RK_DEPENDENCIES="sed grep date"    
+RK_DEPENDENCIES="sed grep date"
 RK_LIBRARIES="required_library.sh"
 
 # CODES FOR TERMINAL - Optimized for compatibility - use printf also for better compatibility
@@ -116,6 +116,19 @@ doc () {
 echoerr() {
   echo -e ${RK_SCRIPT}" [$(date +'%Y-%m-%d %H:%M:%S')] $@" >&2
 }
+# Function to clean-up when exiting
+clean_exit() {
+    local exit_code
+    if [ "${1:-}" == "" ]; then
+        let exit_code=0
+    else
+        let exit_code=$(( $1 ))
+    fi
+    if [[ ${TMPFILE:-} != "" ]]; then
+        rm -f ${TMPFILE:-}*
+    fi
+    exit $exit_code
+}
 # Function to check availability and load the required librarys
 check_libraries() {
   if [[ ${RK_LIBRARIES:-} != "" ]]; then
@@ -129,7 +142,7 @@ check_libraries() {
 	    fi
 	    if [[ ${missing} -gt 0 ]]; then
 		    echoerr "** ERROR **: Cannot found ${missing} required libraries, aborting\n"
-		    exit 1
+		    clean_exit 1
 	    fi
 	  done
   fi
@@ -146,7 +159,7 @@ check_dependencies() {
 	  done
 	  if [[ ${missing} -gt 0 ]]; then
 	    echoerr "** ERROR **: Cannot found ${missing} required commands are missing in PATH, aborting\n"
-	    exit 1
+	    clean_exit 1
 	  fi
   fi
 }
@@ -171,10 +184,10 @@ function_name()
 
   # Checking the parameters and copy to meaningful local variables.
   if [[ "${1:-}" != "" ]]; then
-    first_parameter="${1:-}"    
+    first_parameter="${1:-}"
   else
 	  echoerr "** ERROR in ${FUNCNAME[0]}() ** : Cannot the find first parameter !"
-    exit 1
+    clean_exit 1
   fi
   if [[ "${2:-}" != "" ]]; then
     second_parameter="${2:-}"
@@ -200,7 +213,7 @@ check_dependencies
 echo -e "\n"
 if [[ "${1:-}" == "" ]] && [[ ${RK_HAS_MANDATORY_ARGUMENTS} = "YES" ]]; then
   help
-  exit 1
+  clean_exit 1
 else
   while [[ "${1:-}" != "" ]]
   do
@@ -215,16 +228,16 @@ else
       -d|--doc)  
 		    shift
 		    doc
-		    exit 0
+		    clean_exit 0
 		    ;;
       -h|--help)
 		    shift
 		    help
-		    exit 0
+		    clean_exit 0
 		    ;;
       *)
 		    help
-		    exit 1
+		    clean_exit 1
 		    ;;
 	  esac
   done
@@ -237,6 +250,4 @@ fi
 #####
 
 # Final clean up
-if [[ ${TMPFILE:-} != "" ]]; then
-  rm -f ${TMPFILE:-}*
-fi
+clean_exit
