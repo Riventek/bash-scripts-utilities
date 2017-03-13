@@ -41,6 +41,8 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   set -o nounset
   # Catch the error in case any command in a pipe fails. e.g. mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
   set -o pipefail
+  # Trap signals to have a clean exit
+  trap clean_exit SIGHUP SIGINT SIGTERM
   # Turn on traces, useful while debugging but commented out by default
   # set -o xtrace
 fi
@@ -59,7 +61,7 @@ else
   fi
 fi
 # Add the commands and libraries required for the script to run
-RK_DEPENDENCIES=${RK_DEPENDENCIES:-}" sed grep date"    
+RK_DEPENDENCIES=${RK_DEPENDENCIES:-}" sed grep date"
 RK_LIBRARIES=${RK_DEPENDENCIES:-}" required_library.sh"
 
 #########################################################################
@@ -82,6 +84,8 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   # Function to clean-up when exiting
   clean_exit() {
       local exit_code
+
+      printf "\n${FG_GREEN}>> Cleaning up ...${STYLE_OFF}"
       if [ "${1:-}" == "" ]; then
           let exit_code=0
       else
@@ -90,6 +94,8 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
       if [[ ${TMPFILE:-} != "" ]]; then
           rm -f ${TMPFILE:-}*
       fi
+      printf "DONE !\n"
+
       exit $exit_code
   }
   # Function to check availability and load the required librarys

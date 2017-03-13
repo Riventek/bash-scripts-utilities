@@ -40,6 +40,8 @@ set -o errtrace
 set -o nounset
 # Catch the error in case any command in a pipe fails. e.g. mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
 set -o pipefail
+# Trap signals to have a clean exit
+trap clean_exit SIGHUP SIGINT SIGTERM
 # Turn on traces, useful while debugging but commented out by default
 # set -o xtrace
 
@@ -119,6 +121,8 @@ echoerr() {
 # Function to clean-up when exiting
 clean_exit() {
     local exit_code
+
+    printf "\n${FG_GREEN}>> Cleaning up ...${STYLE_OFF}"
     if [ "${1:-}" == "" ]; then
         let exit_code=0
     else
@@ -127,6 +131,8 @@ clean_exit() {
     if [[ ${TMPFILE:-} != "" ]]; then
         rm -f ${TMPFILE:-}*
     fi
+    printf "DONE !\n"
+
     exit $exit_code
 }
 # Function to check availability and load the required librarys
