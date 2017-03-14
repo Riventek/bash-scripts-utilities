@@ -64,6 +64,8 @@ fi
 RK_DEPENDENCIES=${RK_DEPENDENCIES:-}" sed grep date"
 RK_LIBRARIES=${RK_DEPENDENCIES:-}" required_library.sh"
 
+# ** LIBRARY VARIABLES **
+
 #########################################################################
 # BASIC FUNCTIONS FOR ALL SCRIPTS
 #########################################################################

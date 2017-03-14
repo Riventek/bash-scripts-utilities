@@ -103,6 +103,8 @@ readonly BG_LIGHTCYAN="\e[106m"
 readonly BG_WHITE="\e[107m"
 readonly BG_DEFAULT="\e[49m"
 
+# ## SCRIPT VARIABLES ##
+
 #########################################################################
 # BASIC FUNCTIONS FOR ALL SCRIPTS
 #########################################################################
