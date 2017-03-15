@@ -41,7 +41,7 @@ set -o nounset
 # Catch the error in case any command in a pipe fails. e.g. mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
 set -o pipefail
 # Trap signals to have a clean exit
-trap clean_exit SIGHUP SIGINT SIGTERM
+trap clean_exit SIGHUP SIGINT SIGTERM ERR
 # Turn on traces, useful while debugging but commented out by default
 # set -o xtrace
 
@@ -137,7 +137,7 @@ clean_exit() {
 
     exit $exit_code
 }
-# Function to check availability and load the required librarys
+# Function to check availability and load the required libraries
 check_libraries() {
   if [[ ${RK_LIBRARIES:-} != "" ]]; then
 	  for library in ${RK_LIBRARIES:-}; do
