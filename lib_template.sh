@@ -77,7 +77,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   }
   # Function to extract the documentation from the script
   doc () {
-	  grep '^[ ]*[\#]*[HDF]' ${RK_SCRIPT} | sed 's/^[ ]*[\#]*F / \>/g;s/^[ ]*[\#]*[HDF]//g' | sed 's/^  //'
+	  grep '^[ ]*[\#][\#]*[HDF]' ${RK_SCRIPT} | sed 's/^[ ]*[\#]*F / \>/g;s/^[ ]*[\#]*[HDF]//g' | sed 's/^  //'
   }
   # Function to print the errors and warnings
   echoerr() {
